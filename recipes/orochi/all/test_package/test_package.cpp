@@ -1,8 +1,8 @@
 
 
 #include <Orochi/Orochi.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -63,7 +63,7 @@ int main(int argc, char** argv )
 		{
 			const char* code = "extern \"C\" __global__ "
 							   "void testKernel()"
-							   "{ int a = threadIdx.x; printf(\"	thread %d running\\n\", a); }";
+							   "{ int a = threadIdx.x; }";
 			const char* funcName = "testKernel";
 			orortcProgram prog;
 			orortcResult e;
