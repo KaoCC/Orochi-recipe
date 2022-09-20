@@ -1,5 +1,3 @@
-
-
 from conans import ConanFile, CMake, tools
 import os
 
@@ -12,6 +10,9 @@ class TestPackageConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+    def imports(self):
+        self.copy("*.dll", "", "bin")
 
     def test(self):
         if not tools.cross_building(self):

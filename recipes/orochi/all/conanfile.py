@@ -1,11 +1,12 @@
-
 from conans import ConanFile, CMake, tools
 
 required_conan_version = ">=1.43.0"
 
+
 class OrochiConan(ConanFile):
     name = "orochi"
     homepage = "https://github.com/GPUOpen-LibrariesAndSDKs/Orochi"
+    url = "https://github.com/GPUOpen-LibrariesAndSDKs/Orochi.git"
 
     description = "Orochi is a library loading HIP and CUDA APIs dynamically, allowing the user to switch APIs at runtime."
     license = "MIT"
@@ -16,37 +17,45 @@ class OrochiConan(ConanFile):
 
     generators = "cmake", "cmake_find_package"
 
-    version = "latest"
+    version = "1.00"
 
     @property
     def _source_subfolder(self):
         return "source_subfolder"
-
 
     @property
     def _build_subfolder(self):
         return "build_subfolder"
 
     def source(self):
-        # tools.get(**self.conan_data["sources"][self.version], destination=self._source_subfolder, strip_root=True)
 
-        git = tools.Git(folder=self._source_subfolder)
-        git.clone("https://github.com/GPUOpen-LibrariesAndSDKs/Orochi.git", "main")
-
+        if self.version == "latest":
+            git = tools.Git(folder=self._source_subfolder)
+            git.clone(self.url, "main")
+        else:
+            tools.get(
+                **self.conan_data["sources"][self.version],
+                destination=self._source_subfolder,
+                strip_root=True
+            )
 
     def build(self):
         cmake = CMake(self)
         cmake.configure(build_folder=self._build_subfolder)
         cmake.build()
 
-
     def package(self):
-        self.copy(pattern="LICENSE*", src = self._source_subfolder, dst="licenses")
+        self.copy(pattern="LICENSE*", src=self._source_subfolder, dst="licenses")
 
         cmake = CMake(self)
         cmake.configure(build_folder=self._build_subfolder)
         cmake.install()
 
+        self.copy(
+            pattern="*.dll",
+            src=self._source_subfolder + "/contrib/bin/win64",
+            dst="bin",
+        )
 
     def package_info(self):
         self.cpp_info.names["cmake_find_package"] = "orochi"
